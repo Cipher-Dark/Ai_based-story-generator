@@ -14,50 +14,69 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController userEditingController = TextEditingController();
   TextEditingController passwordEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool isDarkMode = false;
-
-  userLogin() async {
+  void userLogin() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: userEditingController.text,
-          password: passwordEditingController.text);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: userEditingController.text, password: passwordEditingController.text);
+
+      // Dismiss the loading indicator
+      Navigator.pop(context);
+
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.green,
           content: Text(
-            "Login Successfull",
+            "Login Successful",
             style: TextStyle(fontSize: 20),
           )));
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => StoryInputPage(
-            toggleTheme: () {
-              setState(
-                () {
-                  isDarkMode = !isDarkMode;
-                },
-              );
-            },
-            isDarkMode: isDarkMode,
-          ),
+          builder: (context) => StoryInputPage(),
         ),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == "user-not-found") {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              "Invalid User",
-              style: TextStyle(fontSize: 20),
-            )));
-      } else if (e.code == "wrong-password") {
+      // Dismiss the loading indicator
+      Navigator.pop(context);
+
+      if (e.code == 'invalid-credential') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.orangeAccent,
+            content: Center(
+              child: Text(
+                "Invalid credentials",
+                style: TextStyle(fontSize: 20),
+              ),
+            )));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
             content: Text(
-              "Invalid crediantial",
+              "${e.message}",
               style: TextStyle(fontSize: 20),
             )));
       }
+    } catch (e) {
+      // Dismiss the loading indicator
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Center(
+            child: Text(
+              "An unexpected error occurred: $e",
+              style: const TextStyle(fontSize: 20),
+            ),
+          )));
     }
   }
 
@@ -124,32 +143,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 60),
                   GestureDetector(
                     onTap: () {
-                      if (passwordEditingController.text == "" ||
-                          userEditingController.text == "") {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                backgroundColor: Colors.orangeAccent,
-                                content: Text(
-                                  "Please fill mail and password",
-                                  style: TextStyle(fontSize: 20),
-                                )));
+                      if (passwordEditingController.text == "" || userEditingController.text == "") {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.orangeAccent,
+                            content: Text(
+                              "Please fill mail and password",
+                              style: TextStyle(fontSize: 20),
+                            )));
                       }
                       userLogin();
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 13.0, horizontal: 30.0),
-                      decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent,
-                          borderRadius: BorderRadius.circular(30)),
+                      padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
+                      decoration: BoxDecoration(color: Colors.lightBlueAccent, borderRadius: BorderRadius.circular(30)),
                       child: const Center(
                         child: Text(
                           "Login",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
                     ),
@@ -173,10 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: const Text(
                           "Register",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
+                          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                       )
                     ],

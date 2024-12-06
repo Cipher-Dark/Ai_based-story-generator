@@ -1,13 +1,14 @@
+import 'dart:developer';
+
+import 'package:ai_story_gen/provider/data_provider.dart';
+import 'package:ai_story_gen/provider/toggle_provider.dart';
 import 'package:ai_story_gen/screens/output_screen.dart';
 import 'package:flutter/material.dart';
-import '../services/story_gen_service.dart'; // Import the API service
+import 'package:provider/provider.dart';
+import '../services/story_gen_service.dart';
 
 class StoryInputPage extends StatefulWidget {
-  final VoidCallback toggleTheme; // Callback to toggle theme
-  final bool isDarkMode; // Current theme mode
-
-  const StoryInputPage(
-      {super.key, required this.toggleTheme, required this.isDarkMode});
+  const StoryInputPage({super.key});
 
   @override
   _StoryInputPageState createState() => _StoryInputPageState();
@@ -15,59 +16,27 @@ class StoryInputPage extends StatefulWidget {
 
 class _StoryInputPageState extends State<StoryInputPage> {
   final TextEditingController _promptController = TextEditingController();
-  String selectedGenre = 'Fantasy'; // Default genre
-  String selectedTheme = 'Adventure'; // Default theme
-  String selectLanguage = 'Hindi'; // Default language
-  bool _isLoading = false;
-
-  final List<String> genres = [
-    'Mystery',
-    'Sci-Fi',
-    'Horror',
-    'Fantasy',
-    'Romance'
-  ];
-  final List<String> themes = [
-    'Adventure',
-    'Drama',
-    'Humor',
-    'Suspense',
-    'Tragedy'
-  ];
-  final List<String> landuages = [
-    'Hindi',
-    'English',
-  ];
-  // Method to generate a story by calling the API (uses service)
   Future<void> _generateStory() async {
-    setState(() {
-      _isLoading = true;
-    });
+    context.read<DataProvider>().changeLoading(true);
     if (_promptController.text == '') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Center(child: Text('Enter a prompt'))),
       );
-      setState(() {
-        _isLoading = false;
-      });
+      context.read<DataProvider>().changeLoading(false);
       return;
     }
-
     try {
       String? story = await StoryGenService.generateStory(
         _promptController.text,
-        selectedGenre,
-        selectedTheme,
-        selectLanguage,
+        context.read<DataProvider>().getGenres(),
+        context.read<DataProvider>().getThemes(),
+        context.read<DataProvider>().getLanguages(),
       );
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => OutputDisplay(
             data: story.toString(),
-            selectedGenre: selectedGenre.toString(),
-            selectedTheme: selectedTheme.toString(),
-            selectedlanguage: selectLanguage.toString(),
           ),
         ),
       );
@@ -76,9 +45,7 @@ class _StoryInputPageState extends State<StoryInputPage> {
         const SnackBar(content: Text('Failed to generate story.')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      context.read<DataProvider>().changeLoading(false);
     }
   }
 
@@ -89,10 +56,10 @@ class _StoryInputPageState extends State<StoryInputPage> {
         title: const Text('Story Generator'),
         actions: [
           IconButton(
-            icon: widget.isDarkMode
-                ? const Icon(Icons.wb_sunny)
-                : const Icon(Icons.nights_stay),
-            onPressed: widget.toggleTheme,
+            icon: context.watch<ToggelProvider>().getThemeValue() ? const Icon(Icons.wb_sunny) : const Icon(Icons.nights_stay),
+            onPressed: () {
+              context.read<ToggelProvider>().toggleTheme();
+            },
           ),
         ],
       ),
@@ -115,36 +82,25 @@ class _StoryInputPageState extends State<StoryInputPage> {
             Row(
               children: [
                 Expanded(
-                    child:
-                        _buildDropdown('Genre', genres, selectedGenre, (value) {
-                  setState(() {
-                    selectedGenre = value!;
-                  });
+                    child: _buildDropdown('Genre', context.read<DataProvider>().getListOfGenres(), context.read<DataProvider>().getGenres(), (value) {
+                  context.read<DataProvider>().setGenres(value!);
                 })),
                 const SizedBox(width: 16),
                 Expanded(
-                    child:
-                        _buildDropdown('Theme', themes, selectedTheme, (value) {
-                  setState(() {
-                    selectedTheme = value!;
-                  });
+                    child: _buildDropdown('Theme', context.read<DataProvider>().getListOfThemes(), context.read<DataProvider>().getThemes(), (value) {
+                  context.read<DataProvider>().setTheme(value!);
                 })),
                 Expanded(
-                    child: _buildDropdown('Language', landuages, selectLanguage,
-                        (value) {
-                  setState(() {
-                    selectLanguage = value!;
-                  });
+                    child: _buildDropdown('Language', context.read<DataProvider>().getListOfLanguages(), context.read<DataProvider>().getLanguages(), (value) {
+                  context.read<DataProvider>().setLanguage(value!);
                 })),
               ],
             ),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _generateStory,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Generate Story'),
+                onPressed: context.watch<DataProvider>().getLoading() ? null : _generateStory,
+                child: context.watch<DataProvider>().getLoading() ? const CircularProgressIndicator() : const Text('Generate Story'),
               ),
             ),
           ],
@@ -153,8 +109,7 @@ class _StoryInputPageState extends State<StoryInputPage> {
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, String selectedValue,
-      ValueChanged<String?> onChanged) {
+  Widget _buildDropdown(String label, List<String> items, String selectedValue, ValueChanged<String?> onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -1,8 +1,11 @@
-import 'package:ai_story_gen/screens/login_screen.dart';
+import 'package:ai_story_gen/provider/data_provider.dart';
+import 'package:ai_story_gen/provider/toggle_provider.dart';
 import 'package:ai_story_gen/firebase/firebase_options.dart';
+import 'package:ai_story_gen/screens/story_input_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +13,19 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await dotenv.load(fileName: ".env");
-  runApp(const StoryGenApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ToggelProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataProvider(),
+        )
+      ],
+      child: const StoryGenApp(),
+    ),
+  );
 }
 
 class StoryGenApp extends StatefulWidget {
@@ -21,22 +36,12 @@ class StoryGenApp extends StatefulWidget {
 }
 
 class _StoryGenAppState extends State<StoryGenApp> {
-  bool isDarkMode = true;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
-      // home: StoryInputPage(
-      //   toggleTheme: () {
-      //     setState(() {
-      //       isDarkMode = !isDarkMode;
-      //     });
-      //   },
-      //   isDarkMode: isDarkMode,
-      // ),
-      home: const LoginScreen(),
+      theme: context.watch<ToggelProvider>().getThemeValue() ? ThemeData.dark() : ThemeData.light(),
+      home: StoryInputPage(),
     );
   }
 }

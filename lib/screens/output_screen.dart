@@ -1,20 +1,15 @@
+import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ai_story_gen/screens/final_screen.dart';
 import 'package:ai_story_gen/services/story_gen_service.dart';
+import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class OutputDisplay extends StatefulWidget {
   String data;
-  final String selectedGenre;
-  final String selectedTheme;
-  final String selectedlanguage;
   OutputDisplay({
     super.key,
     required this.data,
-    required this.selectedGenre,
-    required this.selectedTheme,
-    required this.selectedlanguage,
   });
 
   @override
@@ -53,10 +48,11 @@ class _OutputDisplayState extends State<OutputDisplay> {
     });
     try {
       data1 = await StoryGenService.generateStory(
-          "${_textEditingController.text} refresh it ",
-          widget.selectedGenre,
-          widget.selectedTheme,
-          widget.selectedlanguage);
+        "${_textEditingController.text} refresh it ",
+        context.read<DataProvider>().getGenres(),
+        context.read<DataProvider>().getThemes(),
+        context.read<DataProvider>().getLanguages(),
+      );
       _textEditingController.text = data1!;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,25 +95,18 @@ class _OutputDisplayState extends State<OutputDisplay> {
                   maxLines: null,
                   minLines: 1,
                   scrollController: _scrollController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), labelText: "Edit Story"),
+                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Edit Story"),
                 )
               : Text(
                   _textEditingController.text,
                   style: const TextStyle(fontSize: 16.0),
                 ),
-          ElevatedButton(
-              onPressed: _isToggle,
-              child: _isEditing
-                  ? const Icon(Icons.next_plan)
-                  : const Icon(Icons.edit))
+          ElevatedButton(onPressed: _isToggle, child: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit))
         ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _refreshStroy,
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : const Icon(Icons.refresh),
+        child: _isLoading ? const CircularProgressIndicator() : const Icon(Icons.refresh),
       ),
     );
   }

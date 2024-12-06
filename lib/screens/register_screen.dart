@@ -16,37 +16,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController passEditingController = TextEditingController();
   TextEditingController passRepeatEditController = TextEditingController();
-  bool isDarkMode = true;
 
   // Declare the form key outside of build method
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Registration function
   registeration() async {
-    if (passRepeatEditController.text != "" &&
-        nameEditingController.text != "" &&
-        emailEditingController.text != "") {
+    if (passRepeatEditController.text != "" && nameEditingController.text != "" && emailEditingController.text != "") {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: emailEditingController.text,
-                password: passRepeatEditController.text);
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailEditingController.text,
+          password: passRepeatEditController.text,
+        );
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
           "Registration Successful",
           style: TextStyle(fontSize: 20),
         )));
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => StoryInputPage(
-                      toggleTheme: () {
-                        setState(() {
-                          isDarkMode = !isDarkMode;
-                        });
-                      },
-                      isDarkMode: isDarkMode,
-                    )));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StoryInputPage()));
       } on FirebaseAuthException catch (e) {
         if (e.code == "weak-password") {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -173,22 +160,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 40),
                   GestureDetector(
                     onTap: () {
-                      registeration();
+                      if (nameEditingController.text == "" || emailEditingController.text == "" || passEditingController.text == "" || passRepeatEditController.text == "") {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.orangeAccent,
+                            content: Text(
+                              "Please fill all fields",
+                              style: TextStyle(fontSize: 20),
+                            )));
+                      } else if (passEditingController.text != passRepeatEditController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.orangeAccent,
+                            content: Text(
+                              "Password does't match",
+                              style: TextStyle(fontSize: 20),
+                            )));
+                      } else {
+                        registeration();
+                      }
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 13.0, horizontal: 30.0),
-                      decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent,
-                          borderRadius: BorderRadius.circular(30)),
+                      padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
+                      decoration: BoxDecoration(color: Colors.lightBlueAccent, borderRadius: BorderRadius.circular(30)),
                       child: const Center(
                         child: Text(
                           "Register",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
                     ),
@@ -201,10 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(width: 10),
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                         },
                         child: const Text(
                           "Login",
