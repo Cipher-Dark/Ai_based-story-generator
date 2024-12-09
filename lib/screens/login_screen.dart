@@ -1,5 +1,6 @@
 import 'package:ai_story_gen/screens/register_screen.dart';
 import 'package:ai_story_gen/screens/story_input_screen.dart';
+import 'package:ai_story_gen/share_preference/save_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController userEditingController = TextEditingController();
   TextEditingController passwordEditingController = TextEditingController();
+  SaveLogin saveLogin = SaveLogin();
   final _formKey = GlobalKey<FormState>();
+
   void userLogin() async {
     // Show loading indicator
     showDialog(
@@ -26,9 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
       },
     );
     try {
+      //UserCredential _loginn =
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: userEditingController.text, password: passwordEditingController.text);
-
-      // Dismiss the loading indicator
+      saveLogin.setLoginPref(true);
       Navigator.pop(context);
 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -188,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       )
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

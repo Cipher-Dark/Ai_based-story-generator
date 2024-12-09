@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-// ignore: must_be_immutable
 class FinalScreen extends StatefulWidget {
-  String data;
-  FinalScreen({
+  final String data;
+
+  const FinalScreen({
     super.key,
     required this.data,
   });
@@ -22,64 +22,68 @@ class _FinalScreenState extends State<FinalScreen> {
     'ur-PK': 'Urdu',
     'ja-JP': 'Japanese',
     'ko-KR': 'Korean',
-    'ru-Ru': 'Russian'
+    'ru-Ru': 'Russian',
   };
-  String _selectLanguage = 'en-US';
 
-  List<String> _language = [];
-  int? _currentWordStart, _currendWordEnd;
-  bool _isPlay = true;
+  String _selectedLanguage = 'en-US';
+  List<String> _languages = [];
+  int? _currentWordStart;
+  int? _currentWordEnd;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    initTts();
+    _initializeTTS();
   }
 
-  Future<void> initTts() async {
-    _flutterTts.setProgressHandler((text, start, end, word) {
-      _currentWordStart = start;
-      _currendWordEnd = end;
+  Future<void> _initializeTTS() async {
+    _flutterTts.setProgressHandler((String text, int start, int end, String? word) {
+      setState(() {
+        _currentWordStart = start;
+        _currentWordEnd = end;
+      });
     });
 
     List<dynamic> availableLanguages = await _flutterTts.getLanguages;
-    _language = availableLanguages
-        .where((language) => _languageMap.keys.contains(language))
-        .map((language) => language as String)
-        .toList();
+    _languages = availableLanguages.where((language) => _languageMap.keys.contains(language)).map((language) => language.toString()).toList();
     setState(() {});
   }
 
-  void _speak(String data) async {
-    await _flutterTts.setLanguage(_selectLanguage);
-    await _flutterTts.speak(data);
-    isPlay();
-  }
-
-  void isPlay() {
+  void _speak(String text) async {
+    await _flutterTts.setLanguage(_selectedLanguage);
+    await _flutterTts.speak(text);
     setState(() {
-      _isPlay = !_isPlay;
+      _isPlaying = true;
     });
   }
 
-  void _save(String data) async {
-    await _flutterTts.setLanguage(_selectLanguage);
-    String timeSpamp = DateTime.now().millisecondsSinceEpoch.toString();
-    await _flutterTts.synthesizeToFile(data, "Story_File_$timeSpamp.mp4");
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("File Downloaded")));
+  void _pause() async {
+    await _flutterTts.pause();
+    setState(() {
+      _isPlaying = false;
+    });
   }
 
   Future<void> _stop() async {
     await _flutterTts.stop();
     setState(() {
-      _isPlay = true;
+      _isPlaying = false;
     });
   }
 
-  Future<void> _pasue() async {
-    _flutterTts.pause();
-    isPlay();
+  void _save(String text) async {
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String fileName = "Story_File_$timestamp.mp4";
+    await _flutterTts.setLanguage(_selectedLanguage);
+    await _flutterTts.synthesizeToFile(text, fileName);
+
+    await ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: AlertDialog(
+        title: Text("Saved"),
+      )),
+    );
   }
 
   @override
@@ -90,133 +94,131 @@ class _FinalScreenState extends State<FinalScreen> {
       ),
       body: Column(
         children: [
-          const SizedBox(width: 16),
+          const SizedBox(height: 16),
           _buildDropdown(
             'Select Language',
-            _language,
-            _selectLanguage,
+            _languages,
+            _selectedLanguage,
             (value) {
               setState(() {
-                _selectLanguage = value!;
+                _selectedLanguage = value!;
               });
             },
           ),
           const SizedBox(height: 16),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            Center(
-              child: Column(children: [
-                IconButton(
-                  onPressed: () {
-                    _isPlay ? _speak(widget.data) : _pasue();
-                  },
-                  icon: _isPlay
-                      ? const Icon(
-                          Icons.play_arrow,
-                          color: Colors.green,
-                        )
-                      : const Icon(
-                          Icons.pause,
-                          color: Colors.blue,
-                        ),
-                ),
-                Text(
-                  _isPlay ? "Play" : "pause",
-                  style: _isPlay
-                      ? const TextStyle(color: Colors.green)
-                      : const TextStyle(color: Colors.blue),
-                ),
-              ]),
-            ),
-            Center(
-              child: Column(children: [
-                IconButton(
-                  onPressed: () {
-                    _stop();
-                  },
-                  icon: const Icon(
-                    Icons.stop,
-                    color: Colors.red,
-                  ),
-                ),
-                const Text(
-                  "Stop",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ]),
-            ),
-          ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildControlButton(
+                icon: _isPlaying ? Icons.pause : Icons.play_arrow,
+                color: _isPlaying ? Colors.blue : Colors.green,
+                label: _isPlaying ? "Pause" : "Play",
+                onPressed: () {
+                  if (_isPlaying) {
+                    _pause();
+                  } else {
+                    _speak(widget.data);
+                  }
+                },
+              ),
+              _buildControlButton(
+                icon: Icons.stop,
+                color: Colors.red,
+                label: "Stop",
+                onPressed: _stop,
+              ),
+            ],
+          ),
           const SizedBox(height: 30),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.6,
+          Expanded(
             child: SingleChildScrollView(
               child: Container(
                 decoration: const BoxDecoration(color: Colors.white70),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      children: <TextSpan>[
+                padding: const EdgeInsets.all(8.0),
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black),
+                    children: [
+                      if (_currentWordStart != null)
                         TextSpan(
-                          text: widget.data.substring(0, _currentWordStart),
+                          text: widget.data.substring(0, _currentWordStart!),
                         ),
-                        if (_currentWordStart != null)
-                          TextSpan(
-                            text: widget.data
-                                .substring(_currentWordStart!, _currendWordEnd),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                backgroundColor: Colors.purple),
+                      if (_currentWordStart != null && _currentWordEnd != null)
+                        TextSpan(
+                          text: widget.data.substring(
+                            _currentWordStart!,
+                            _currentWordEnd!,
                           ),
-                        if (_currendWordEnd != null)
-                          TextSpan(
-                            text: widget.data.substring(_currendWordEnd!),
-                          )
-                      ],
-                    ),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            backgroundColor: Colors.purple,
+                          ),
+                        ),
+                      if (_currentWordEnd != null)
+                        TextSpan(
+                          text: widget.data.substring(_currentWordEnd!),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-          Column(children: [
-            IconButton(
-              onPressed: () {
-                _save(widget.data);
-              },
-              icon: const Icon(Icons.save),
-              color: Colors.grey,
-            ),
-            const Text(
-              "Save",
-              style: TextStyle(color: Colors.grey),
-            )
-          ])
+          _buildControlButton(
+            icon: Icons.save,
+            color: Colors.grey,
+            label: "Save",
+            onPressed: () {
+              _save(widget.data);
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, String selectedValue,
-      ValueChanged<String?> onChanged) {
+  Widget _buildDropdown(
+    String label,
+    List<String> items,
+    String selectedValue,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 16)),
+          const SizedBox(height: 8),
+          DropdownButton<String>(
+            isExpanded: true,
+            value: selectedValue,
+            onChanged: onChanged,
+            items: items.map((item) {
+              return DropdownMenuItem(
+                value: item,
+                child: Text(_languageMap[item]!),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlButton({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
-        const SizedBox(height: 8),
-        DropdownButton<String>(
-          isExpanded: true,
-          value: selectedValue,
-          onChanged: onChanged,
-          items: items.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(_languageMap[item]!),
-            );
-          }).toList(),
+        IconButton(
+          icon: Icon(icon, color: color),
+          onPressed: onPressed,
         ),
+        Text(label, style: TextStyle(color: color)),
       ],
     );
   }

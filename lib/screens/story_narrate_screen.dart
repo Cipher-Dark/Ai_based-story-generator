@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-// ignore: must_be_immutable
 class FinalScreen extends StatefulWidget {
-  String data;
-  FinalScreen({
+  final String data;
+  const FinalScreen({
     super.key,
     required this.data,
   });
@@ -43,10 +42,7 @@ class _FinalScreenState extends State<FinalScreen> {
     });
 
     List<dynamic> availableLanguages = await _flutterTts.getLanguages;
-    _language = availableLanguages
-        .where((language) => _languageMap.keys.contains(language))
-        .map((language) => language as String)
-        .toList();
+    _language = availableLanguages.where((language) => _languageMap.keys.contains(language)).map((language) => language as String).toList();
     setState(() {});
   }
 
@@ -66,8 +62,7 @@ class _FinalScreenState extends State<FinalScreen> {
     await _flutterTts.setLanguage(_selectLanguage);
     String timeSpamp = DateTime.now().millisecondsSinceEpoch.toString();
     await _flutterTts.synthesizeToFile(data, "Story_File_$timeSpamp.mp4");
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("File Downloaded")));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("File Downloaded")));
   }
 
   Future<void> _stop() async {
@@ -121,9 +116,7 @@ class _FinalScreenState extends State<FinalScreen> {
                 ),
                 Text(
                   _isPlay ? "Play" : "pause",
-                  style: _isPlay
-                      ? const TextStyle(color: Colors.green)
-                      : const TextStyle(color: Colors.blue),
+                  style: _isPlay ? const TextStyle(color: Colors.green) : const TextStyle(color: Colors.blue),
                 ),
               ]),
             ),
@@ -164,11 +157,8 @@ class _FinalScreenState extends State<FinalScreen> {
                         ),
                         if (_currentWordStart != null)
                           TextSpan(
-                            text: widget.data
-                                .substring(_currentWordStart!, _currendWordEnd),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                backgroundColor: Colors.purple),
+                            text: widget.data.substring(_currentWordStart!, _currendWordEnd),
+                            style: const TextStyle(color: Colors.white, backgroundColor: Colors.purple),
                           ),
                         if (_currendWordEnd != null)
                           TextSpan(
@@ -199,8 +189,7 @@ class _FinalScreenState extends State<FinalScreen> {
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, String selectedValue,
-      ValueChanged<String?> onChanged) {
+  Widget _buildDropdown(String label, List<String> items, String selectedValue, ValueChanged<String?> onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

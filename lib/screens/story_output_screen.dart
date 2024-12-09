@@ -5,9 +5,11 @@ import 'package:ai_story_gen/screens/final_screen.dart';
 import 'package:ai_story_gen/services/story_gen_service.dart';
 import 'package:provider/provider.dart';
 
+// import 'story_narrate_screen.dart';
+
 class OutputDisplay extends StatefulWidget {
-  String data;
-  OutputDisplay({
+  final String data;
+  const OutputDisplay({
     super.key,
     required this.data,
   });
