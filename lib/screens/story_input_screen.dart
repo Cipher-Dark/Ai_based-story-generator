@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:ai_story_gen/provider/keep_loign_provider.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
@@ -52,8 +50,6 @@ class _StoryInputPageState extends State<StoryInputPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("${context.read<KeepLoignProvider>().storedValue()}");
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Story Generator'),

@@ -1,5 +1,4 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
-import 'package:ai_story_gen/provider/keep_loign_provider.dart';
 import 'package:ai_story_gen/screens/story_input_screen.dart';
 import 'package:ai_story_gen/share_preference/save_login.dart';
 import 'package:ai_story_gen/screens/login_screen.dart';
@@ -25,9 +24,6 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => DataProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => KeepLoignProvider(),
         ),
       ],
       child: StoryGenApp(),
