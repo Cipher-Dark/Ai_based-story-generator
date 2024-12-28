@@ -78,7 +78,7 @@ class _FinalScreenState extends State<FinalScreen> {
     await _flutterTts.setLanguage(_selectedLanguage);
     await _flutterTts.synthesizeToFile(text, fileName);
 
-    await ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
           content: AlertDialog(
         title: Text("Saved"),

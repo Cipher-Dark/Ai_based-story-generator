@@ -1,214 +1,207 @@
+import 'package:ai_story_gen/firebase/auth/firebase_register_email_password.dart';
 import 'package:ai_story_gen/screens/login_screen.dart';
-import 'package:ai_story_gen/screens/story_input_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ai_story_gen/widgets/custom_text_Filed.dart';
+import 'package:ai_story_gen/widgets/sign_in_methods.dart';
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
 
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
-  // Declare controllers
-  TextEditingController nameEditingController = TextEditingController();
-  TextEditingController emailEditingController = TextEditingController();
-  TextEditingController passEditingController = TextEditingController();
-  TextEditingController passRepeatEditController = TextEditingController();
-
-  // Declare the form key outside of build method
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  // Registration function
-  registeration() async {
-    if (passRepeatEditController.text != "" && nameEditingController.text != "" && emailEditingController.text != "") {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailEditingController.text,
-          password: passRepeatEditController.text,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-          "Registration Successful",
-          style: TextStyle(fontSize: 20),
-        )));
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StoryInputPage()));
-      } on FirebaseAuthException catch (e) {
-        if (e.code == "weak-password") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Password is too weak",
-                style: TextStyle(fontSize: 20),
-              )));
-        } else if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Email already in use",
-                style: TextStyle(fontSize: 20),
-              )));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "An error occurred, please try again",
-                style: TextStyle(fontSize: 20),
-              )));
-        }
-      }
-    }
-  }
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController repeatPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         title: const Center(
-          child: Text("Register"),
+          child: Text(
+            "Sign Up",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+            ),
+          ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter name';
-                  }
-                  return null;
-                },
-                controller: nameEditingController,
-                decoration: const InputDecoration(
-                  hintText: "Enter full name",
-                  labelText: "Full Name",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(
-                    Icons.person,
-                    color: Colors.green,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter Email';
-                  }
-                  return null;
-                },
-                controller: emailEditingController,
-                decoration: const InputDecoration(
-                  hintText: "Enter email",
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(
-                    Icons.email_outlined,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter Password';
-                  }
-                  return null;
-                },
-                controller: passEditingController,
-                decoration: const InputDecoration(
-                  hintText: "Enter password",
-                  border: OutlineInputBorder(),
-                  labelText: "Password",
-                  prefixIcon: Icon(
-                    Icons.password,
-                    color: Colors.green,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  } else if (value != passEditingController.text) {
-                    return "Passwords don't match!";
-                  }
-                  return null;
-                },
-                controller: passRepeatEditController,
-                decoration: const InputDecoration(
-                    hintText: "Enter password again ",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(
-                      Icons.password,
-                      color: Colors.green,
+              Center(child: Image.asset("assets/logo.png")),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  SizedBox(width: 30),
+                  Text(
+                    "Register to AI Story Gen",
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
-                    labelText: "Confirm Password"),
+                  ),
+                ],
               ),
-              const SizedBox(height: 30),
               Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40),
-                  GestureDetector(
-                    onTap: () {
-                      if (nameEditingController.text == "" || emailEditingController.text == "" || passEditingController.text == "" || passRepeatEditController.text == "") {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            backgroundColor: Colors.orangeAccent,
-                            content: Text(
-                              "Please fill all fields",
-                              style: TextStyle(fontSize: 20),
-                            )));
-                      } else if (passEditingController.text != passRepeatEditController.text) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            backgroundColor: Colors.orangeAccent,
-                            content: Text(
-                              "Password does't match",
-                              style: TextStyle(fontSize: 20),
-                            )));
-                      } else {
-                        registeration();
-                      }
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
-                      decoration: BoxDecoration(color: Colors.lightBlueAccent, borderRadius: BorderRadius.circular(30)),
-                      child: const Center(
-                        child: Text(
-                          "Register",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        spacing: 10,
+                        children: [
+                          CustomTextFiled(
+                            passwordController: emailController,
+                            icon: Icon(
+                              Icons.email_outlined,
+                              color: Colors.black,
+                            ),
+                            hintText: "Enter Email",
+                            labelText: "Email",
+                            obscureText: false,
+                          ),
+                          CustomTextFiled(
+                            passwordController: passwordController,
+                            icon: Icon(
+                              Icons.password_outlined,
+                              color: Colors.black,
+                            ),
+                            hintText: 'Enter password',
+                            labelText: "Password",
+                            obscureText: false,
+                          ),
+                          CustomTextFiled(
+                            passwordController: repeatPasswordController,
+                            icon: Icon(
+                              Icons.password_outlined,
+                              color: Colors.black,
+                            ),
+                            hintText: 'Enter repeat password',
+                            labelText: "Repeat Password",
+                            obscureText: true,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (passwordController.text == "" || emailController.text == "" || repeatPasswordController.text == "") {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 2),
+                                    backgroundColor: Colors.black54,
+                                    content: Center(
+                                      child: Text(
+                                        "Please fill mail and password",
+                                        style: TextStyle(fontSize: 20, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else if (passwordController.text != repeatPasswordController.text) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 2),
+                                    backgroundColor: Colors.black54,
+                                    content: Center(
+                                      child: Text(
+                                        "Password does't match",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                FirebaseRegisterEmailPassword().registrationWithEmailPass(
+                                  context,
+                                  emailController.text,
+                                  passwordController.text,
+                                );
+                              }
+                            },
+                            child: Container(
+                              height: 40,
+                              width: size.width * .9,
+                              decoration: BoxDecoration(
+                                color: Colors.lightBlue[50],
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Sign up",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Already have account? ",
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "Log in",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            "or continue with",
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                          Column(
+                            spacing: 30,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SignInMethods(
+                                text: 'Google',
+                                icon: 'assets/google.png',
+                                Widthsize: size.width * .9,
+                              ),
+                              SignInMethods(
+                                text: 'Google',
+                                icon: 'assets/facebook.png',
+                                Widthsize: size.width * .9,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Already have account!"),
-                      const SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-                        },
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 14,
-                          ),
-                        ),
-                      )
-                    ],
                   ),
                 ],
               ),

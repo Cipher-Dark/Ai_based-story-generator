@@ -1,5 +1,4 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
-import 'package:ai_story_gen/provider/keep_loign_provider.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:ai_story_gen/screens/story_output_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,11 @@ class _StoryInputPageState extends State<StoryInputPage> {
     context.read<DataProvider>().changeLoading(true);
     if (_promptController.text == '') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Center(child: Text('Enter a prompt'))),
+        const SnackBar(
+            showCloseIcon: true,
+            content: Center(
+              child: Text('Enter a prompt'),
+            )),
       );
       context.read<DataProvider>().changeLoading(false);
       return;
