@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:ai_story_gen/firebase/multi_auth/multi_auth_link.dart';
-import 'package:ai_story_gen/screens/story_input_screen.dart';
+import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class FirebaseEmailPassword {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const StoryInputPage(),
+          builder: (context) => const HomeScreen(),
         ),
       );
     } on FirebaseAuthException catch (e) {

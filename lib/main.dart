@@ -1,5 +1,5 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
-import 'package:ai_story_gen/screens/splash_screen.dart';
+import 'package:ai_story_gen/views/splash_screen/splash_screen.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:ai_story_gen/firebase/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';

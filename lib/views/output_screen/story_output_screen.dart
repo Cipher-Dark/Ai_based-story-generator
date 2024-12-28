@@ -1,7 +1,7 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ai_story_gen/screens/final_screen.dart';
+import 'package:ai_story_gen/views/listen_screen/story_listen_screen.dart';
 import 'package:ai_story_gen/services/story_gen_service.dart';
 import 'package:provider/provider.dart';
 
@@ -35,12 +35,13 @@ class _OutputDisplayState extends State<OutputDisplay> {
 
   void _finalScreen() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => FinalScreen(
-                  data: _textEditingController.text,
-                )));
-    return;
+      context,
+      MaterialPageRoute(
+        builder: (context) => StoryListenScreen(
+          data: _textEditingController.text,
+        ),
+      ),
+    );
   }
 
   Future<void> _refreshStroy() async {

@@ -1,6 +1,7 @@
 import 'package:ai_story_gen/firebase/auth/firebase_register_email_password.dart';
-import 'package:ai_story_gen/screens/login_screen.dart';
-import 'package:ai_story_gen/widgets/custom_text_Filed.dart';
+import 'package:ai_story_gen/firebase/google_sign_in/google_signin.dart';
+import 'package:ai_story_gen/views/login_screen/login_screen.dart';
+import 'package:ai_story_gen/widgets/custom_text_filed.dart';
 import 'package:ai_story_gen/widgets/sign_in_methods.dart';
 import 'package:flutter/material.dart';
 
@@ -187,13 +188,18 @@ class RegisterScreen extends StatelessWidget {
                             spacing: 30,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              SignInMethods(
-                                text: 'Google',
-                                icon: 'assets/google.png',
-                                Widthsize: size.width * .9,
+                              GestureDetector(
+                                onTap: () {
+                                  GoogleSignin().signInWithGoogle(context);
+                                },
+                                child: SignInMethods(
+                                  text: 'Google',
+                                  icon: 'assets/google.png',
+                                  Widthsize: size.width * .9,
+                                ),
                               ),
                               SignInMethods(
-                                text: 'Google',
+                                text: 'Facebook',
                                 icon: 'assets/facebook.png',
                                 Widthsize: size.width * .9,
                               ),

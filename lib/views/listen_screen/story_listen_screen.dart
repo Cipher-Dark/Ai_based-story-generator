@@ -1,19 +1,20 @@
+import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-class FinalScreen extends StatefulWidget {
+class StoryListenScreen extends StatefulWidget {
   final String data;
 
-  const FinalScreen({
+  const StoryListenScreen({
     super.key,
     required this.data,
   });
 
   @override
-  State<FinalScreen> createState() => _FinalScreenState();
+  State<StoryListenScreen> createState() => _StoryListenScreenState();
 }
 
-class _FinalScreenState extends State<FinalScreen> {
+class _StoryListenScreenState extends State<StoryListenScreen> {
   final FlutterTts _flutterTts = FlutterTts();
 
   final Map<String, String> _languageMap = {
@@ -109,24 +110,18 @@ class _FinalScreenState extends State<FinalScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildControlButton(
-                icon: _isPlaying ? Icons.pause : Icons.play_arrow,
-                color: _isPlaying ? Colors.blue : Colors.green,
-                label: _isPlaying ? "Pause" : "Play",
-                onPressed: () {
-                  if (_isPlaying) {
-                    _pause();
-                  } else {
-                    _speak(widget.data);
-                  }
-                },
-              ),
-              _buildControlButton(
-                icon: Icons.stop,
-                color: Colors.red,
-                label: "Stop",
-                onPressed: _stop,
-              ),
+              CustomSmallButton(
+                  icon: _isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: _isPlaying ? Colors.blue : Colors.green,
+                  label: _isPlaying ? "Pause" : "Play",
+                  onPressed: () {
+                    if (_isPlaying) {
+                      _pause();
+                    } else {
+                      _speak(widget.data);
+                    }
+                  }),
+              CustomSmallButton(icon: Icons.stop, color: Colors.red, label: "Stop", onPressed: _stop),
             ],
           ),
           const SizedBox(height: 30),
@@ -164,14 +159,13 @@ class _FinalScreenState extends State<FinalScreen> {
               ),
             ),
           ),
-          _buildControlButton(
-            icon: Icons.save,
-            color: Colors.grey,
-            label: "Save",
-            onPressed: () {
-              _save(widget.data);
-            },
-          ),
+          CustomSmallButton(
+              icon: Icons.save,
+              color: Colors.grey,
+              label: "Save",
+              onPressed: () {
+                _save(widget.data);
+              }),
         ],
       ),
     );
@@ -203,23 +197,6 @@ class _FinalScreenState extends State<FinalScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildControlButton({
-    required IconData icon,
-    required Color color,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return Column(
-      children: [
-        IconButton(
-          icon: Icon(icon, color: color),
-          onPressed: onPressed,
-        ),
-        Text(label, style: TextStyle(color: color)),
-      ],
     );
   }
 }

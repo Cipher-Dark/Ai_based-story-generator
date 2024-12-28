@@ -1,18 +1,20 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
+import 'package:ai_story_gen/setting/setting_page.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
-import 'package:ai_story_gen/screens/story_output_screen.dart';
+import 'package:ai_story_gen/views/output_screen/story_output_screen.dart';
+import 'package:ai_story_gen/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/story_gen_service.dart';
+import '../../services/story_gen_service.dart';
 
-class StoryInputPage extends StatefulWidget {
-  const StoryInputPage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  _StoryInputPageState createState() => _StoryInputPageState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _StoryInputPageState extends State<StoryInputPage> {
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _promptController = TextEditingController();
   Future<void> _generateStory() async {
     context.read<DataProvider>().changeLoading(true);
@@ -58,10 +60,15 @@ class _StoryInputPageState extends State<StoryInputPage> {
         title: const Text('Story Generator'),
         actions: [
           IconButton(
-            icon: context.watch<ThemeProvider>().getThemeValue() ? const Icon(Icons.wb_sunny) : const Icon(Icons.nights_stay),
             onPressed: () {
-              context.read<ThemeProvider>().toggleTheme();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingPage(),
+                ),
+              );
             },
+            icon: Icon(Icons.settings),
           ),
         ],
       ),
@@ -84,18 +91,30 @@ class _StoryInputPageState extends State<StoryInputPage> {
             Row(
               children: [
                 Expanded(
-                    child: _buildDropdown('Genre', context.read<DataProvider>().getListOfGenres(), context.read<DataProvider>().getGenres(), (value) {
-                  context.read<DataProvider>().setGenres(value!);
-                })),
+                    child: CustomDropDown(
+                        label: 'Genre',
+                        items: context.read<DataProvider>().getListOfGenres(),
+                        selectedValue: context.read<DataProvider>().getGenres(),
+                        onChanged: (value) {
+                          context.read<DataProvider>().setGenres(value!);
+                        })),
                 const SizedBox(width: 16),
                 Expanded(
-                    child: _buildDropdown('Theme', context.read<DataProvider>().getListOfThemes(), context.read<DataProvider>().getThemes(), (value) {
-                  context.read<DataProvider>().setTheme(value!);
-                })),
+                    child: CustomDropDown(
+                        label: 'Theme',
+                        items: context.read<DataProvider>().getListOfThemes(),
+                        selectedValue: context.read<DataProvider>().getThemes(),
+                        onChanged: (value) {
+                          context.read<DataProvider>().setTheme(value!);
+                        })),
                 Expanded(
-                    child: _buildDropdown('Language', context.read<DataProvider>().getListOfLanguages(), context.read<DataProvider>().getLanguages(), (value) {
-                  context.read<DataProvider>().setLanguage(value!);
-                })),
+                    child: CustomDropDown(
+                        label: 'Language',
+                        items: context.read<DataProvider>().getListOfLanguages(),
+                        selectedValue: context.read<DataProvider>().getLanguages(),
+                        onChanged: (value) {
+                          context.read<DataProvider>().setLanguage(value!);
+                        })),
               ],
             ),
             const SizedBox(height: 20),
@@ -108,27 +127,6 @@ class _StoryInputPageState extends State<StoryInputPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDropdown(String label, List<String> items, String selectedValue, ValueChanged<String?> onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
-        const SizedBox(height: 8),
-        DropdownButton<String>(
-          isExpanded: true,
-          value: selectedValue,
-          onChanged: onChanged,
-          items: items.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:ai_story_gen/screens/story_input_screen.dart';
+import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -54,11 +54,12 @@ class FirebaseRegisterEmailPassword {
         );
 
         try {
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => const StoryInputPage(),
+              builder: (context) => HomeScreen(),
             ),
+            (Route<dynamic> route) => false,
           );
         } catch (e) {
           log('Navigation error: $e');
