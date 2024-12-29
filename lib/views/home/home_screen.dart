@@ -1,6 +1,5 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:ai_story_gen/setting/setting_page.dart';
-import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:ai_story_gen/views/output_screen/story_output_screen.dart';
 import 'package:ai_story_gen/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
