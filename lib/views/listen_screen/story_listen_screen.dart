@@ -1,11 +1,15 @@
+import 'dart:developer';
+
+import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
 
 class StoryListenScreen extends StatefulWidget {
   final String data;
 
-  const StoryListenScreen({
+  StoryListenScreen({
     super.key,
     required this.data,
   });
@@ -74,39 +78,100 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
   }
 
   void _save(String text) async {
-    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    String fileName = "Story_File_$timestamp.mp4";
-    await _flutterTts.setLanguage(_selectedLanguage);
-    await _flutterTts.synthesizeToFile(text, fileName);
+    try {
+      String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      String fileName = "Story_File_$timestamp.mp3";
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: AlertDialog(
-        title: Text("Saved"),
-      )),
-    );
+      await _flutterTts.setLanguage(_selectedLanguage);
+      await _flutterTts.setSpeechRate(0.5);
+      await _flutterTts.setVolume(1.0);
+      await _flutterTts.setPitch(1.0);
+      await _flutterTts.synthesizeToFile(text, fileName);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("File saved $fileName")),
+      );
+    } catch (e) {
+      log(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to save file: $e"),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("Listen")),
+        title: Center(child: Text("Listen")),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildDropdown(
-            'Select Language',
-            _languages,
-            _selectedLanguage,
-            (value) {
+            label: 'Select Language',
+            items: _languages,
+            selectedValue: _selectedLanguage,
+            onChanged: (value) {
               setState(() {
                 _selectedLanguage = value!;
               });
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 30),
+          Container(
+            padding: EdgeInsets.all(8),
+            width: MediaQuery.of(context).size.width * .95,
+            height: MediaQuery.of(context).size.height * 0.6,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white),
+            ),
+            child: SingleChildScrollView(
+              child: !_isPlaying
+                  ? Text(
+                      widget.data,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.watch<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
+                      ),
+                    )
+                  : RichText(
+                      textAlign: TextAlign.justify,
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: context.watch<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
+                        ),
+                        children: [
+                          if (_currentWordStart != null)
+                            TextSpan(
+                              text: widget.data.substring(0, _currentWordStart!),
+                            ),
+                          if (_currentWordStart != null && _currentWordEnd != null)
+                            TextSpan(
+                              text: widget.data.substring(
+                                _currentWordStart!,
+                                _currentWordEnd!,
+                              ),
+                              style: TextStyle(
+                                color: Colors.white,
+                                backgroundColor: Colors.purple,
+                              ),
+                            ),
+                          if (_currentWordEnd != null)
+                            TextSpan(
+                              text: widget.data.substring(_currentWordEnd!),
+                            ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -122,69 +187,36 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
                     }
                   }),
               CustomSmallButton(icon: Icons.stop, color: Colors.red, label: "Stop", onPressed: _stop),
+              CustomSmallButton(
+                icon: Icons.download,
+                color: Colors.grey,
+                label: "Download Audio",
+                onPressed: () {
+                  _save(widget.data);
+                },
+              ),
             ],
           ),
-          const SizedBox(height: 30),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                decoration: const BoxDecoration(color: Colors.white70),
-                padding: const EdgeInsets.all(8.0),
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(color: Colors.black),
-                    children: [
-                      if (_currentWordStart != null)
-                        TextSpan(
-                          text: widget.data.substring(0, _currentWordStart!),
-                        ),
-                      if (_currentWordStart != null && _currentWordEnd != null)
-                        TextSpan(
-                          text: widget.data.substring(
-                            _currentWordStart!,
-                            _currentWordEnd!,
-                          ),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            backgroundColor: Colors.purple,
-                          ),
-                        ),
-                      if (_currentWordEnd != null)
-                        TextSpan(
-                          text: widget.data.substring(_currentWordEnd!),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          CustomSmallButton(
-              icon: Icons.save,
-              color: Colors.grey,
-              label: "Save",
-              onPressed: () {
-                _save(widget.data);
-              }),
         ],
       ),
     );
   }
 
-  Widget _buildDropdown(
-    String label,
-    List<String> items,
-    String selectedValue,
-    ValueChanged<String?> onChanged,
-  ) {
+  Widget _buildDropdown({required String label, required List<String> items, required String selectedValue, required ValueChanged<String?> onChanged}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 16)),
-          const SizedBox(height: 8),
-          DropdownButton<String>(
+          Text(label, style: TextStyle(fontSize: 16)),
+          SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
             isExpanded: true,
             value: selectedValue,
             onChanged: onChanged,

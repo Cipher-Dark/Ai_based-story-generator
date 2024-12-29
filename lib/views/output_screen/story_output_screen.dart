@@ -1,4 +1,5 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
+import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ai_story_gen/views/listen_screen/story_listen_screen.dart';
@@ -45,6 +46,8 @@ class _OutputDisplayState extends State<OutputDisplay> {
   }
 
   Future<void> _refreshStroy() async {
+    var provider = context.read<DataProvider>();
+
     setState(() {
       _isLoading = true;
       _isGenerate = true;
@@ -52,9 +55,9 @@ class _OutputDisplayState extends State<OutputDisplay> {
     try {
       data1 = await StoryGenService.getStory(
         "${_textEditingController.text} refresh it ",
-        context.read<DataProvider>().getGenres(),
-        context.read<DataProvider>().getThemes(),
-        context.read<DataProvider>().getLanguages(),
+        provider.getGenres(),
+        provider.getThemes(),
+        provider.getLanguages(),
       );
       _textEditingController.text = data1!;
     } catch (e) {
@@ -76,6 +79,7 @@ class _OutputDisplayState extends State<OutputDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = context.read<ThemeProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("Story Generated")),
@@ -90,24 +94,49 @@ class _OutputDisplayState extends State<OutputDisplay> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(children: [
-          _isEditing
-              ? TextField(
+        child: Column(
+          spacing: 20,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Divider(),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * .7,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                scrollDirection: Axis.vertical,
+                child: TextField(
+                  enabled: _isEditing,
                   controller: _textEditingController,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   minLines: 1,
+                  style: TextStyle(
+                    color: provider.getThemeValue() ? Colors.white : Colors.black,
+                  ),
                   scrollController: _scrollController,
-                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Edit Story"),
-                )
-              : Text(
-                  _textEditingController.text,
-                  style: const TextStyle(fontSize: 16.0),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: _isEditing ? "Edit Story" : "Story",
+                  ),
                 ),
-          ElevatedButton(onPressed: _isToggle, child: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit))
-        ]),
+              ),
+            ),
+            Column(
+              children: [
+                IconButton(
+                  tooltip: _isEditing ? "Edit" : "Save",
+                  onPressed: _isToggle,
+                  icon: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit),
+                ),
+                Text(_isEditing ? "save" : "Edit"),
+              ],
+            )
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue[50],
+        elevation: 12,
         onPressed: _refreshStroy,
         child: _isLoading ? const CircularProgressIndicator() : const Icon(Icons.refresh),
       ),
