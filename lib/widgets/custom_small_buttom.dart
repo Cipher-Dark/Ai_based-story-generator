@@ -16,14 +16,25 @@ class CustomSmallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        IconButton(
-          icon: Icon(icon, color: color),
-          onPressed: onPressed,
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        // width: 80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          // border: Border.all(),
         ),
-        Text(label, style: TextStyle(color: color)),
-      ],
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: color,
+              size: 30,
+            ),
+            Text(label, style: TextStyle(color: color, fontSize: 15)),
+          ],
+        ),
+      ),
     );
   }
 }

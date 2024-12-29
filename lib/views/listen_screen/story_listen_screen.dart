@@ -1,6 +1,6 @@
 import 'dart:developer';
-
 import 'package:ai_story_gen/theme/theme_provider.dart';
+import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -32,8 +32,7 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
 
   String _selectedLanguage = 'en-US';
   List<String> _languages = [];
-  int? _currentWordStart;
-  int? _currentWordEnd;
+
   bool _isPlaying = false;
 
   @override
@@ -43,13 +42,6 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
   }
 
   Future<void> _initializeTTS() async {
-    _flutterTts.setProgressHandler((String text, int start, int end, String? word) {
-      setState(() {
-        _currentWordStart = start;
-        _currentWordEnd = end;
-      });
-    });
-
     List<dynamic> availableLanguages = await _flutterTts.getLanguages;
     _languages = availableLanguages.where((language) => _languageMap.keys.contains(language)).map((language) => language.toString()).toList();
     setState(() {});
@@ -104,105 +96,145 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text("Listen")),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: 16),
-          _buildDropdown(
-            label: 'Select Language',
-            items: _languages,
-            selectedValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() {
-                _selectedLanguage = value!;
-              });
-            },
-          ),
-          SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width * .95,
-            height: MediaQuery.of(context).size.height * 0.6,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white),
-            ),
-            child: SingleChildScrollView(
-              child: !_isPlaying
-                  ? Text(
-                      widget.data,
-                      textAlign: TextAlign.justify,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: context.watch<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
-                      ),
-                    )
-                  : RichText(
-                      textAlign: TextAlign.justify,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: context.watch<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
-                        ),
-                        children: [
-                          if (_currentWordStart != null)
-                            TextSpan(
-                              text: widget.data.substring(0, _currentWordStart!),
-                            ),
-                          if (_currentWordStart != null && _currentWordEnd != null)
-                            TextSpan(
-                              text: widget.data.substring(
-                                _currentWordStart!,
-                                _currentWordEnd!,
-                              ),
-                              style: TextStyle(
-                                color: Colors.white,
-                                backgroundColor: Colors.purple,
-                              ),
-                            ),
-                          if (_currentWordEnd != null)
-                            TextSpan(
-                              text: widget.data.substring(_currentWordEnd!),
-                            ),
-                        ],
-                      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                spacing: MediaQuery.of(context).size.width * .25,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                    icon: Icon(Icons.arrow_back_ios_new),
+                  ),
+                  Center(
+                    child: Text(
+                      "Listen Story",
+                      style: TextStyle(fontSize: 25),
                     ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              CustomSmallButton(
-                  icon: _isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: _isPlaying ? Colors.blue : Colors.green,
-                  label: _isPlaying ? "Pause" : "Play",
-                  onPressed: () {
-                    if (_isPlaying) {
-                      _pause();
-                    } else {
-                      _speak(widget.data);
-                    }
-                  }),
-              CustomSmallButton(icon: Icons.stop, color: Colors.red, label: "Stop", onPressed: _stop),
-              CustomSmallButton(
-                icon: Icons.download,
-                color: Colors.grey,
-                label: "Download Audio",
-                onPressed: () {
-                  _save(widget.data);
-                },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ],
+            ),
+            Divider(),
+            SizedBox(height: 10),
+            _buildDropdown(
+              label: 'Select Language',
+              items: _languages,
+              selectedValue: _selectedLanguage,
+              onChanged: (value) {
+                setState(() {
+                  _selectedLanguage = value!;
+                });
+              },
+            ),
+            SizedBox(height: 30),
+            Container(
+              padding: EdgeInsets.all(8),
+              width: MediaQuery.of(context).size.width * .95,
+              height: MediaQuery.of(context).size.height * 0.6,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white),
+              ),
+              child: SingleChildScrollView(
+                child: Text(
+                  widget.data,
+                  textAlign: TextAlign.justify,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: context.watch<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                CustomSmallButton(
+                    icon: _isPlaying ? Icons.pause : Icons.play_arrow,
+                    color: _isPlaying ? Colors.blue : Colors.green,
+                    label: _isPlaying ? "Pause" : "Play",
+                    onPressed: () {
+                      if (_isPlaying) {
+                        _pause();
+                      } else {
+                        _speak(widget.data);
+                      }
+                    }),
+                CustomSmallButton(icon: Icons.stop, color: Colors.red, label: "Stop", onPressed: _stop),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      popupMenue(context),
+                      Text("Save")
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDropdown({required String label, required List<String> items, required String selectedValue, required ValueChanged<String?> onChanged}) {
+  PopupMenuButton<String> popupMenue(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: "Save",
+      icon: Icon(Icons.save_alt_sharp),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'audio',
+          child: Text('Save as audio'),
+        ),
+        PopupMenuItem<String>(
+          value: 'pdf',
+          child: Text('Save as pdf'),
+        ),
+        PopupMenuItem<String>(
+          value: 'online',
+          child: Text('Save online'),
+        ),
+      ],
+      onSelected: (String value) {
+        switch (value) {
+          case 'audio':
+            _save(widget.data);
+            break;
+          case 'pdf':
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("File saved as Pdf")),
+            );
+            break;
+          case 'online':
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Story saved online")),
+            );
+            break;
+        }
+      },
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required List<String> items,
+    required String selectedValue,
+    required ValueChanged<String?> onChanged,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(

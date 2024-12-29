@@ -1,5 +1,6 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
+import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ai_story_gen/views/listen_screen/story_listen_screen.dart';
@@ -81,56 +82,83 @@ class _OutputDisplayState extends State<OutputDisplay> {
   Widget build(BuildContext context) {
     var provider = context.read<ThemeProvider>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text("Story Generated")),
-        actions: [
-          InkWell(
-            onTap: () {
-              _finalScreen();
-            },
-            child: const Icon(Icons.queue_music_outlined),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
         child: Column(
-          spacing: 20,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Divider(),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .7,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                scrollDirection: Axis.vertical,
-                child: TextField(
-                  enabled: _isEditing,
-                  controller: _textEditingController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  minLines: 1,
-                  style: TextStyle(
-                    color: provider.getThemeValue() ? Colors.white : Colors.black,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                    ),
                   ),
-                  scrollController: _scrollController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: _isEditing ? "Edit Story" : "Story",
+                  Center(
+                      child: Text(
+                    "Story Generated",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  )),
+                  InkWell(
+                    onTap: () {
+                      _finalScreen();
+                    },
+                    child: const Icon(Icons.queue_music_outlined),
                   ),
-                ),
+                ],
               ),
             ),
-            Column(
-              children: [
-                IconButton(
-                  tooltip: _isEditing ? "Edit" : "Save",
-                  onPressed: _isToggle,
-                  icon: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit),
-                ),
-                Text(_isEditing ? "save" : "Edit"),
-              ],
-            )
+            Divider(),
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                spacing: 20,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .7,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      scrollDirection: Axis.vertical,
+                      child: TextField(
+                        enabled: _isEditing,
+                        controller: _textEditingController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        minLines: 1,
+                        style: TextStyle(
+                          color: provider.getThemeValue() ? Colors.white : Colors.black,
+                        ),
+                        scrollController: _scrollController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: _isEditing ? "Edit Story" : "Story",
+                        ),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        tooltip: _isEditing ? "Edit" : "Save",
+                        onPressed: _isToggle,
+                        icon: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit),
+                      ),
+                      Text(_isEditing ? "save" : "Edit"),
+                    ],
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),

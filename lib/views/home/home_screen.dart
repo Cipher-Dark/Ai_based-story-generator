@@ -1,4 +1,5 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
+import 'package:ai_story_gen/services/story_gen_service.dart';
 import 'package:ai_story_gen/setting/setting_page.dart';
 import 'package:ai_story_gen/views/output_screen/story_output_screen.dart';
 import 'package:ai_story_gen/widgets/custom_drop_down.dart';
@@ -140,18 +141,18 @@ Future<void> generateStory(BuildContext context, String prompt) async {
     return;
   }
   try {
-    // String? story = await StoryGenService.getStory(
-    //   prompt,
-    //   provider.getGenres(),
-    //   provider.getThemes(),
-    //   provider.getLanguages(),
-    // );
+    String? story = await StoryGenService.getStory(
+      prompt,
+      provider.getGenres(),
+      provider.getThemes(),
+      provider.getLanguages(),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OutputDisplay(
-          // data: story.toString(),
-          data: "The Journey Beyond the Horizon follows Arun, a curious young boy from a small village, who sets out on an adventure to find an ancient island hidden in the ocean, seeking its rumored power and treasure. After facing perilous trials and a mysterious figure warning him of the price—his soul—Arun chooses knowledge over power, realizing that true wisdom lies not in what one takes, but in what one gives, ultimately returning to his village with a deeper understanding of life's true treasures.",
+          data: story.toString(),
+          // data: "The Journey Beyond the Horizon follows Arun, a curious young boy from a small village, who sets out on an adventure to find an ancient island hidden in the ocean, seeking its rumored power and treasure. After facing perilous trials and a mysterious figure warning him of the price—his soul—Arun chooses knowledge over power, realizing that true wisdom lies not in what one takes, but in what one gives, ultimately returning to his village with a deeper understanding of life's true treasures.",
         ),
       ),
     );
