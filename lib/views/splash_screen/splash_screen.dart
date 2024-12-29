@@ -33,9 +33,6 @@ class _SplashScreenState extends State<SplashScreen> {
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          // if (snapshot.connectionState == ConnectionState.waiting) {
-          //   return const CircularProgressIndicator();
-          // } else
           if (snapshot.hasData) {
             return HomeScreen();
           } else {

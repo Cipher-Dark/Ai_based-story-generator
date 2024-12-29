@@ -50,7 +50,7 @@ class _OutputDisplayState extends State<OutputDisplay> {
       _isGenerate = true;
     });
     try {
-      data1 = await StoryGenService.generateStory(
+      data1 = await StoryGenService.getStory(
         "${_textEditingController.text} refresh it ",
         context.read<DataProvider>().getGenres(),
         context.read<DataProvider>().getThemes(),

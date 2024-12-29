@@ -22,7 +22,7 @@ class FirebaseEmailPassword {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => HomeScreen(),
         ),
       );
     } on FirebaseAuthException catch (e) {

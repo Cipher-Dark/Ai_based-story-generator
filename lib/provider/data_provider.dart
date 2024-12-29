@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DataProvider extends ChangeNotifier {
-  String _selectedGenre = 'Fantasy'; // Default genre
+  String _selectedGenre = 'Mystery'; // Default genre
   String _selectedTheme = 'Adventure'; // Default theme
   String _selectLanguage = 'Hindi'; // Default language
   bool _isLoading = false;
