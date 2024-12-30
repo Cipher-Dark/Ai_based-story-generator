@@ -153,7 +153,7 @@ class LoginScreen extends StatelessWidget {
                                 ),
                               ),
                               SignInMethods(
-                                text: 'Google',
+                                text: 'Facebook',
                                 icon: 'assets/facebook.png',
                                 Widthsize: size.width * .9,
                               ),

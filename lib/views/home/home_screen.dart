@@ -30,17 +30,6 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SettingPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.settings),
-                    ),
                   ],
                 ),
               ),

@@ -19,12 +19,6 @@ class SettingPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    child: Icon(Icons.arrow_back_ios),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
                   Padding(
                     padding: EdgeInsets.only(right: size.width * .40),
                     child: Text(

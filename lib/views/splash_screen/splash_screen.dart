@@ -1,5 +1,5 @@
+import 'package:ai_story_gen/views/botom_nav_bar/bottom_nav_bar.dart';
 import 'package:ai_story_gen/views/login_screen/login_screen.dart';
-import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeScreen();
+            return BottomNavBar();
           } else {
             return LoginScreen();
           }

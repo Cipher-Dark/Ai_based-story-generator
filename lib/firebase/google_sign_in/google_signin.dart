@@ -1,4 +1,6 @@
-import 'package:ai_story_gen/views/home/home_screen.dart';
+import 'dart:developer';
+
+import 'package:ai_story_gen/views/botom_nav_bar/bottom_nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +16,13 @@ class GoogleSignin {
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      log(googleAuth.accessToken.toString());
 
-      GoogleAuthProvider.credential(
+      OAuthCredential credian = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      log(credian.toString());
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -33,7 +37,7 @@ class GoogleSignin {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(),
+          builder: (context) => BottomNavBar(),
         ),
         (Route<dynamic> route) => false,
       );
