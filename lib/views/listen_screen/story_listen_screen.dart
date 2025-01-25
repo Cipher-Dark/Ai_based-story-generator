@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:ai_story_gen/data/stories_data.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
 import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 class StoryListenScreen extends StatefulWidget {
   final String data;
 
-  StoryListenScreen({
+  const StoryListenScreen({
     super.key,
     required this.data,
   });
@@ -206,7 +207,7 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
         ),
         PopupMenuItem<String>(
           value: 'online',
-          child: Text('Save online'),
+          child: Text('Save'),
         ),
       ],
       onSelected: (String value) {
@@ -220,9 +221,17 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
             );
             break;
           case 'online':
+            context.read<StoriesDataProvider>().addStory(
+                  context.read<StoriesDataProvider>().storyCount + 1,
+                  '${widget.data.split(' ').take(4).join(' ')}...',
+                  widget.data,
+                  DateTime.now().toString(),
+                );
+
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Story saved online")),
+              SnackBar(content: Text("File saved ")),
             );
+
             break;
         }
       },

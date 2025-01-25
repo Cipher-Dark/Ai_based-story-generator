@@ -1,3 +1,4 @@
+import 'package:ai_story_gen/utils/apis.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -26,12 +27,8 @@ class Profile extends StatelessWidget {
                   fit: StackFit.passthrough,
                   children: [
                     CircleAvatar(
-                      radius: 33,
-                      backgroundColor: Colors.grey,
-                    ),
-                    CircleAvatar(
                       radius: 30,
-                      backgroundImage: FirebaseAuth.instance.currentUser?.photoURL != null ? NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!) : AssetImage('assets/profile.png') as ImageProvider,
+                      backgroundImage: Apis.auth.currentUser?.photoURL != null ? NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!) : AssetImage('assets/profile.png') as ImageProvider,
                     ),
                   ],
                 )
@@ -42,7 +39,7 @@ class Profile extends StatelessWidget {
               children: [
                 Text.rich(
                   TextSpan(
-                    text: "${FirebaseAuth.instance.currentUser?.displayName}\n",
+                    text: "${Apis.auth.currentUser?.displayName}\n",
                     style: const TextStyle(fontSize: 20),
                     children: const [
                       TextSpan(

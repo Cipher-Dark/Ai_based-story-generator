@@ -1,60 +1,50 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
+import 'package:ai_story_gen/utils/apis.dart';
+import 'package:ai_story_gen/utils/dialogs.dart';
 import 'package:ai_story_gen/views/botom_nav_bar/bottom_nav_bar.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FirebaseRegisterEmailPassword {
-  registrationWithEmailPass(
-    context,
-    String emailEditingController,
-    String passEditingController,
-  ) async {
+  registrationWithEmailPass({
+    required BuildContext context,
+    required String emailEditingController,
+    required String passEditingController,
+    required String nameEditingController,
+  }) async {
     if (passEditingController != "" && emailEditingController != "") {
       try {
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailEditingController)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Invalid email format",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
+          Dialogs.showSnackBarError(
+            context,
+            "Invalid email format",
           );
+
           return;
         }
 
         if (passEditingController.length < 6) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Password must be at least 6 characters",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          );
+          Dialogs.showSnackBarError(context, "Password must be at least 6 characters");
+
           return;
         }
-
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailEditingController,
-          password: passEditingController,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.green,
-            elevation: 12.3,
-            content: Text(
-              "Sign in Successful",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-        );
+        Dialogs.showProgressBar(context);
 
         try {
+          await Apis.auth.createUserWithEmailAndPassword(
+            email: emailEditingController,
+            password: passEditingController,
+          );
+          if (!(await Apis.isUserExist())) {
+            Apis.createUser(nameEditingController);
+          }
+
+          Dialogs.showSnackBar(context, "Sign in Successful");
+          Navigator.pop(context);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -63,41 +53,23 @@ class FirebaseRegisterEmailPassword {
             (Route<dynamic> route) => false,
           );
         } catch (e) {
-          log('Navigation error: $e');
+          Navigator.pop(context);
+
+          Dialogs.showSnackBarError(context, "Try again!");
         }
       } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
+
         log(e.toString());
         if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Email already in use",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          );
+          Dialogs.showSnackBarError(context, "Email already registered");
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "An error occurred, please try again",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          );
+          Dialogs.showSnackBarError(context, "An error occurred, please try again");
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              "An error occurred, please try again",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-        );
+        Navigator.pop(context);
+
+        Dialogs.showSnackBarError(context, "An error occurred, please try again");
       }
     }
   }

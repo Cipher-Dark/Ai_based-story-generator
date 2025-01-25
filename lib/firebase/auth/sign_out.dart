@@ -1,47 +1,26 @@
+import 'package:ai_story_gen/utils/apis.dart';
+import 'package:ai_story_gen/utils/dialogs.dart';
 import 'package:ai_story_gen/views/login_screen/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignOut {
-  static void signOut(BuildContext context) async {
+  static Future<void> signOut(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green[50],
-          elevation: 12.3,
-          content: const Text(
-            "Sign out success",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      );
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ),
-        (Route<dynamic> route) => false,
-      );
+      Dialogs.showProgressBar(context);
+      await Apis.auth.signOut().then((value) async {
+        await GoogleSignIn().signOut().then((value) {
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+          // ignore: use_build_context_synchronously
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => LoginScreen()), (route) => false);
+        });
+      });
+      // ignore: use_build_context_synchronously
+      Dialogs.showSnackBar(context, "Sign out success");
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red[50],
-          elevation: 12.3,
-          content: const Text(
-            "Sign out falil! try after some time.",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      );
+      // ignore: use_build_context_synchronously
+      Dialogs.showSnackBar(context, "Sign out falil! try after some time.");
     }
   }
 }

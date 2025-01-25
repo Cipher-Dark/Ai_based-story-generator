@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 class SignInMethods extends StatelessWidget {
   final String text;
   final String icon;
-  final double Widthsize;
+  final double widthsize;
 
   const SignInMethods({
     super.key,
     required this.text,
     required this.icon,
-    required this.Widthsize,
+    required this.widthsize,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: Widthsize,
+      width: widthsize,
       height: 40,
       decoration: BoxDecoration(
         color: Color(0XFFF1F5F9),

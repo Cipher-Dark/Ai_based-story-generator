@@ -1,6 +1,5 @@
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:ai_story_gen/services/story_gen_service.dart';
-import 'package:ai_story_gen/setting/setting_page.dart';
 import 'package:ai_story_gen/views/output_screen/story_output_screen.dart';
 import 'package:ai_story_gen/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
@@ -120,12 +119,23 @@ Future<void> generateStory(BuildContext context, String prompt) async {
   provider.changeLoading(true);
   if (prompt == '') {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          showCloseIcon: true,
-          content: Center(
-            child: Text('Enter a prompt'),
-          )),
+      SnackBar(
+        showCloseIcon: true,
+        elevation: 10,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Enter a prompt',
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
     );
+
     provider.changeLoading(false);
     return;
   }

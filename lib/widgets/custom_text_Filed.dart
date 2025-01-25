@@ -5,13 +5,22 @@ class CustomTextFiled extends StatelessWidget {
   final String hintText;
   final String labelText;
   final bool obscureText;
-  const CustomTextFiled({super.key, required this.passwordController, required, required this.icon, required this.hintText, required this.labelText, required this.obscureText});
+
+  const CustomTextFiled({
+    super.key,
+    required this.passwordController,
+    required,
+    required this.icon,
+    required this.hintText,
+    required this.labelText,
+    required this.obscureText,
+  });
 
   final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: passwordController,
       obscureText: obscureText,
       style: TextStyle(color: Colors.black), // For password masking

@@ -1,50 +1,35 @@
 import 'dart:developer';
-
-import 'package:ai_story_gen/views/botom_nav_bar/bottom_nav_bar.dart';
+import 'package:ai_story_gen/utils/apis.dart';
+import 'package:ai_story_gen/utils/dialogs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 
 class GoogleSignin {
-  Future<void> signInWithGoogle(BuildContext context) async {
+  static Future<void> signInWithGoogle(BuildContext context) async {
     try {
       // Attempt to sign in the user with Google
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      Dialogs.showProgressBar(context);
 
-      if (googleUser == null) {
-        return;
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        final AuthCredential authCredential = GoogleAuthProvider.credential(idToken: googleSignInAuthentication.idToken, accessToken: googleSignInAuthentication.accessToken);
+        FirebaseAuth auth = FirebaseAuth.instance;
+        UserCredential result = await auth.signInWithCredential(authCredential);
+        User? user = result.user;
+        log(user!.displayName.toString());
+        Apis.createUser(user.displayName.toString());
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
       }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      log(googleAuth.accessToken.toString());
-
-      OAuthCredential credian = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      log(credian.toString());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.green,
-          elevation: 12.3,
-          content: Text(
-            "Login Successful",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BottomNavBar(),
-        ),
-        (Route<dynamic> route) => false,
-      );
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed: $error')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign-in failed: $error')),
+        );
+      }
     }
   }
 }

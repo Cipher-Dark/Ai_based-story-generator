@@ -73,38 +73,33 @@ class SettingPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Consumer<ThemeProvider>(
-                        builder: (ctx, provider, __) {
-                          return IconButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Are you sure?'),
-                                    content: Text('Do you want to log out?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          SignOut.signOut(context);
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Logout'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Cancel'),
-                                      ),
-                                    ],
-                                  );
-                                },
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Are you sure?'),
+                                content: Text('Do you want to log out?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () async {
+                                      await SignOut.signOut(context);
+                                    },
+                                    child: Text('Logout'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                ],
                               );
                             },
-                            icon: Icon(Icons.logout_rounded),
                           );
                         },
+                        icon: Icon(Icons.logout_rounded),
                       )
                     ],
                   ),
