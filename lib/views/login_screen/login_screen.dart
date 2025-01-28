@@ -133,7 +133,7 @@ class LoginScreen extends StatelessWidget {
                         await GoogleSignin.signInWithGoogle(context).then((onValue) {
                           if (context.mounted) {
                             Dialogs.showSnackBar(context, "Login Successful");
-
+                            Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(

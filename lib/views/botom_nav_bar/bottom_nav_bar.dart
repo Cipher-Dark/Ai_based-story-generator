@@ -1,4 +1,4 @@
-import 'package:ai_story_gen/setting/setting_page.dart';
+import 'package:ai_story_gen/views/setting/setting_page.dart';
 import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:ai_story_gen/views/profile/profile.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _listWidget = [
     HomeScreen(),
     Profile(),
-    SettingPage(),
   ];
 
   @override
@@ -32,19 +31,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: Image.asset(
               "assets/user.png",
-              color: _currentIndex == 1 ? Colors.blue[300] : Colors.grey[700],
+              color: _currentIndex == 1 ? Colors.purple : null,
             ),
             label: "Profile",
             backgroundColor: Colors.pink,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Setting",
-            backgroundColor: Colors.pink,
-          )
         ],
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.blue[300],
+        selectedItemColor: Colors.purple,
         onTap: (int index) {
           setState(() {
             _currentIndex = index;

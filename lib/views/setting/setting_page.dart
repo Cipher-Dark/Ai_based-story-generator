@@ -12,34 +12,34 @@ class SettingPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Column(
+          spacing: 10,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(right: size.width * .40),
-                    child: Text(
-                      "Setting",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back_ios_new)),
+                  Text(
+                    "Setting",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                  Text(""),
                 ],
               ),
             ),
             Divider(),
             Padding(
-              padding: const EdgeInsets.only(
-                right: 30,
-                left: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                spacing: 40,
+                spacing: 15,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +99,11 @@ class SettingPage extends StatelessWidget {
                             },
                           );
                         },
-                        icon: Icon(Icons.logout_rounded),
+                        icon: Image.asset(
+                          "assets/logout.png",
+                          scale: 15,
+                          color: context.read<ThemeProvider>().getThemeValue() ? Colors.white : Colors.black,
+                        ),
                       )
                     ],
                   ),

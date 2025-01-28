@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:ai_story_gen/provider/data_provider.dart';
 import 'package:ai_story_gen/theme/theme_provider.dart';
-import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ai_story_gen/views/listen_screen/story_listen_screen.dart';
@@ -39,6 +40,7 @@ class _OutputDisplayState extends State<OutputDisplay> {
       MaterialPageRoute(
         builder: (context) => StoryListenScreen(
           data: _textEditingController.text,
+          isonlin: false,
         ),
       ),
     );
@@ -90,12 +92,7 @@ class _OutputDisplayState extends State<OutputDisplay> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
+                      Navigator.pop(context);
                     },
                     icon: Icon(
                       Icons.arrow_back_ios_new,
@@ -161,7 +158,6 @@ class _OutputDisplayState extends State<OutputDisplay> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue[50],
         elevation: 12,
         onPressed: _refreshStroy,
         child: _isLoading ? const CircularProgressIndicator() : const Icon(Icons.refresh),

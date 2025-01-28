@@ -1,18 +1,22 @@
-import 'dart:developer';
-import 'package:ai_story_gen/data/stories_data.dart';
-import 'package:ai_story_gen/theme/theme_provider.dart';
-import 'package:ai_story_gen/views/home/home_screen.dart';
-import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
+import 'package:ai_story_gen/theme/theme_provider.dart';
+import 'package:ai_story_gen/utils/apis.dart';
+import 'package:ai_story_gen/utils/dialogs.dart';
+import 'package:ai_story_gen/views/listen_screen/save_as_pdf.dart';
+import 'package:ai_story_gen/widgets/custom_small_buttom.dart';
+
 class StoryListenScreen extends StatefulWidget {
   final String data;
+  final bool isonlin;
 
   const StoryListenScreen({
     super.key,
     required this.data,
+    required this.isonlin,
   });
 
   @override
@@ -80,17 +84,9 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
       await _flutterTts.setVolume(1.0);
       await _flutterTts.setPitch(1.0);
       await _flutterTts.synthesizeToFile(text, fileName);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("File saved $fileName")),
-      );
+      Dialogs.showSnackBar(context, "Audio file saved $fileName");
     } catch (e) {
-      log(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to save file: $e"),
-        ),
-      );
+      Dialogs.showSnackBarError(context, "Failed to save file: $e");
     }
   }
 
@@ -109,10 +105,7 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
+                      Navigator.pop(context);
                     },
                     icon: Icon(Icons.arrow_back_ios_new),
                   ),
@@ -173,17 +166,19 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
                       }
                     }),
                 CustomSmallButton(icon: Icons.stop, color: Colors.red, label: "Stop", onPressed: _stop),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      popupMenue(context),
-                      Text("Save")
-                    ],
-                  ),
-                )
+                !widget.isonlin
+                    ? Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Column(
+                          children: [
+                            popupMenue(context),
+                            Text("Save"),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ],
@@ -207,30 +202,29 @@ class _StoryListenScreenState extends State<StoryListenScreen> {
         ),
         PopupMenuItem<String>(
           value: 'online',
-          child: Text('Save'),
+          child: Text('Save online'),
         ),
       ],
       onSelected: (String value) {
         switch (value) {
           case 'audio':
             _save(widget.data);
+
             break;
           case 'pdf':
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("File saved as Pdf")),
-            );
-            break;
-          case 'online':
-            context.read<StoriesDataProvider>().addStory(
-                  context.read<StoriesDataProvider>().storyCount + 1,
-                  '${widget.data.split(' ').take(4).join(' ')}...',
-                  widget.data,
-                  DateTime.now().toString(),
-                );
+            SaveAsPdf.saveTextAsPdf(widget.data);
+            Dialogs.showSnackBar(context, "Story saved as PDF");
+            SaveAsPdf.openPdf();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("File saved ")),
+          case 'online':
+            Dialogs.showProgressBar(context);
+            Apis.saveOnline(
+              widget.data,
+              DateTime.now().millisecondsSinceEpoch.toString(),
+              '${widget.data.split(' ').take(4).join(' ')}...',
             );
+            Navigator.pop(context);
+            Dialogs.showSnackBar(context, "Online saved");
 
             break;
         }
