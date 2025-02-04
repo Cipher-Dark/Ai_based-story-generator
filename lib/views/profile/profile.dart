@@ -76,7 +76,30 @@ class _ProfileState extends State<Profile> {
                   );
                 },
                 onLongPress: () {
-                  log("Long press");
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Are you sure?'),
+                        content: Text('Do you want to remove this story?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Apis.removeOnlinStory(stories[index].id);
+                              Navigator.pop(context);
+                            },
+                            child: Text('Remove'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
                 child: storyTile(index),
               );
@@ -111,8 +134,6 @@ class _ProfileState extends State<Profile> {
     return ListTile(
       leading: ClipOval(
         child: CachedNetworkImage(
-          height: 60,
-          width: 60,
           fit: BoxFit.fill,
           placeholder: (context, url) => Center(child: CircularProgressIndicator()),
           imageUrl: Apis.userData.profileUrl,

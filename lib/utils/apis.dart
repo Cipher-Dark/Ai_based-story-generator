@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ai_story_gen/model/saved_story.dart';
 import 'package:ai_story_gen/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,5 +48,13 @@ class Apis {
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getOnlineStory() {
     return firebaseFirestore.collection("data").doc(user.uid).collection("storys").snapshots().map((snapshot) => snapshot.docs);
+  }
+
+  static removeOnlinStory(String id) async {
+    try {
+      await firebaseFirestore.collection("data").doc(user.uid).collection("storys").doc(id).delete();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

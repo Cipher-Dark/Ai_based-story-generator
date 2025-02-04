@@ -8,7 +8,7 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -80,7 +80,7 @@ class SettingPage extends StatelessWidget {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text('Are you sure?'),
-                                content: Text('Do you want to log out?'),
+                                content: Text('You want to log out?'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () async {
@@ -90,7 +90,7 @@ class SettingPage extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      Navigator.pop(context);
                                     },
                                     child: Text('Cancel'),
                                   ),

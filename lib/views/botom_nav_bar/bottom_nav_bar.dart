@@ -1,4 +1,3 @@
-import 'package:ai_story_gen/views/setting/setting_page.dart';
 import 'package:ai_story_gen/views/home/home_screen.dart';
 import 'package:ai_story_gen/views/profile/profile.dart';
 import 'package:flutter/material.dart';
