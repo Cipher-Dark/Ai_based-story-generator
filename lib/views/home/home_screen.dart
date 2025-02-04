@@ -105,12 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: MediaQuery.of(context).size.width * .9,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Colors.purple.withValues(alpha: .5),
-                            border: Border.all(),
+                            color: Colors.purple.withValues(alpha: .2),
+                            border: Border.all(color: Colors.black.withValues(alpha: 0.2)),
                           ),
                           child: Center(
                             child: context.watch<DataProvider>().getLoading()
-                                ? const CircularProgressIndicator()
+                                ? Image.asset("assets/icon/loader.gif")
                                 : const Text(
                                     'Generate Story',
                                     style: TextStyle(

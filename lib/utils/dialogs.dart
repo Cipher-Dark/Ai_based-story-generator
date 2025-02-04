@@ -46,4 +46,8 @@ class Dialogs {
   static void showProgressBar(BuildContext context) {
     showDialog(context: context, builder: (_) => Center(child: CircularProgressIndicator()));
   }
+
+  static showLoader() {
+    return Image.asset("assets/icon/loader.gif");
+  }
 }
