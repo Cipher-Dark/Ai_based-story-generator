@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ai_story_gen/model/saved_story.dart';
 import 'package:ai_story_gen/utils/apis.dart';
 import 'package:ai_story_gen/views/listen_screen/story_listen_screen.dart';
