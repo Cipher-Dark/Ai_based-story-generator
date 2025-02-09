@@ -83,78 +83,80 @@ class _OutputDisplayState extends State<OutputDisplay> {
     var provider = context.read<ThemeProvider>();
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.arrow_back_ios_new,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_back_ios_new,
+                      ),
                     ),
-                  ),
-                  Center(
-                      child: Text(
-                    "Story Generated",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  )),
-                  InkWell(
-                    onTap: () {
-                      _finalScreen();
-                    },
-                    child: const Icon(Icons.queue_music_outlined),
-                  ),
-                ],
+                    Center(
+                        child: Text(
+                      "Story Generated",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    )),
+                    InkWell(
+                      onTap: () {
+                        _finalScreen();
+                      },
+                      child: const Icon(Icons.queue_music_outlined),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Divider(),
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                spacing: 20,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * .7,
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      scrollDirection: Axis.vertical,
-                      child: TextField(
-                        enabled: _isEditing,
-                        controller: _textEditingController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        minLines: 1,
-                        style: TextStyle(
-                          color: provider.getThemeValue() ? Colors.white : Colors.black,
-                        ),
-                        scrollController: _scrollController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: _isEditing ? "Edit Story" : "Story",
+              Divider(),
+              SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  spacing: 20,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * .7,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        scrollDirection: Axis.vertical,
+                        child: TextField(
+                          enabled: _isEditing,
+                          controller: _textEditingController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          minLines: 1,
+                          style: TextStyle(
+                            color: provider.getThemeValue() ? Colors.white : Colors.black,
+                          ),
+                          scrollController: _scrollController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: _isEditing ? "Edit Story" : "Story",
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        tooltip: _isEditing ? "Edit" : "Save",
-                        onPressed: _isToggle,
-                        icon: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit),
-                      ),
-                      Text(_isEditing ? "save" : "Edit"),
-                    ],
-                  )
-                ],
+                    Column(
+                      children: [
+                        IconButton(
+                          tooltip: _isEditing ? "Edit" : "Save",
+                          onPressed: _isToggle,
+                          icon: _isEditing ? const Icon(Icons.next_plan) : const Icon(Icons.edit),
+                        ),
+                        Text(_isEditing ? "save" : "Edit"),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -136,6 +136,8 @@ class _ProfileState extends State<Profile> {
           placeholder: (context, url) => Center(child: CircularProgressIndicator()),
           imageUrl: Apis.userData.profileUrl,
           errorWidget: (context, url, error) => Image.asset("assets/profile.png"),
+          height: 60,
+          width: 60,
         ),
       ),
       title: Text(
